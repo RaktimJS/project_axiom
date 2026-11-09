@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { APIProvider, Map as GoogleMap, Polygon, Polyline, useMap } from '@vis.gl/react-google-maps'
 import './App.css'
 
 const parcelData = [
@@ -206,24 +207,43 @@ const parcelData = [
   },
 ]
 
-const mapShapes = [
-  { id: 'plot-3b', points: '58% 24%, 89% 18%, 93% 60%, 60% 74%, 42% 56%' },
-  { id: 'plot-7a', points: '21% 47%, 47% 28%, 61% 50%, 38% 74%, 12% 69%' },
-  { id: 'plot-9c', points: '64% 43%, 82% 38%, 94% 64%, 72% 85%, 54% 70%' },
-]
+const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
-const roleOptions = ['Citizen', 'Revenue official', 'Bank', 'Legal practitioner']
+function MapDrawingController({ drawingTool, setDraftPoints }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!map) return undefined
+
+    const drawing = drawingTool !== 'pan'
+    map.setOptions({
+      draggable: !drawing,
+      gestureHandling: drawing ? 'none' : 'greedy',
+      disableDoubleClickZoom: drawing,
+    })
+
+    if (drawingTool === 'polygon') {
+      const clickListener = map.addListener('click', (event) => {
+        if (!event.latLng) return
+        setDraftPoints((points) => [...points, event.latLng.toJSON()])
+      })
+      return () => clickListener.remove()
+    }
+
+    return undefined
+  }, [drawingTool, map, setDraftPoints])
+
+  return null
+}
 
 function App() {
-  const [selectedId, setSelectedId] = useState('plot-7a')
   const [transactionIntent, setTransactionIntent] = useState('Sale deed transfer')
-  const [selectedRole, setSelectedRole] = useState('Citizen')
-  const [selectedAreaPercent, setSelectedAreaPercent] = useState(68)
+  const [drawingTool, setDrawingTool] = useState('pan')
+  const [drawMenuOpen, setDrawMenuOpen] = useState(false)
+  const [drawnShapes, setDrawnShapes] = useState([])
+  const [draftPoints, setDraftPoints] = useState([])
 
-  const selectedParcel = useMemo(
-    () => parcelData.find((parcel) => parcel.id === selectedId) ?? parcelData[0],
-    [selectedId],
-  )
+  const selectedParcel = parcelData[0]
 
   const statusKey = selectedParcel.status.toLowerCase().replace(/\s+/g, '-')
 
@@ -234,17 +254,13 @@ function App() {
         ? 'No material mismatch or restriction was found in the available records.'
         : 'Record data is broadly consistent, but condition checks still require review.'
 
-  const roleGuidance = {
-    Citizen: 'Focus on whether the parcel can be prepared for a transaction without hidden legal issues.',
-    'Revenue official': 'Review whether the parcel is ready for administrative approval, mutation, or escalation.',
-    Bank: 'Check whether the property and title records are suitable for financial due diligence.',
-    'Legal practitioner': 'Assess the risk profile, chain of title, and unresolved legal or regulatory issues.',
+  const finishPolygon = () => {
+    if (draftPoints.length < 3) return
+    setDrawnShapes((shapes) => [...shapes, { id: Date.now(), points: draftPoints }])
+    setDraftPoints([])
+    setDrawingTool('pan')
+    setDrawMenuOpen(false)
   }
-
-  const selectionArea = useMemo(() => {
-    const numericPart = Number.parseFloat(selectedParcel.selectedArea)
-    return Number.isFinite(numericPart) ? `${Math.round(numericPart * (selectedAreaPercent / 100) * 100) / 100} ha` : selectedParcel.selectedArea
-  }, [selectedAreaPercent, selectedParcel.selectedArea])
 
   const handleGenerateReport = () => {
     const report = [
@@ -253,8 +269,8 @@ function App() {
       `Parcel: ${selectedParcel.name}`,
       `Status: ${selectedParcel.status}`,
       `Intent: ${transactionIntent}`,
-      `Role lens: ${selectedRole}`,
-      `Selected transaction area: ${selectionArea}`,
+      `Selected transaction area: ${selectedParcel.selectedArea}`,
+      `User-drawn shapes: ${drawnShapes.length}`,
       `Owner: ${selectedParcel.owner}`,
       `Circle: ${selectedParcel.circle}`,
       '',
@@ -308,50 +324,87 @@ function App() {
             <span className="demo-tag">Demonstration data</span>
           </div>
 
-          <div className="role-switcher" aria-label="Stakeholder roles">
-            {roleOptions.map((role) => (
-              <button
-                key={role}
-                type="button"
-                className={selectedRole === role ? 'role-button active' : 'role-button'}
-                onClick={() => setSelectedRole(role)}
-              >
-                {role}
-              </button>
-            ))}
+          <div className="map-tools" role="toolbar" aria-label="Map drawing tools">
+            <button
+              type="button"
+              className={drawMenuOpen ? 'map-tool active' : 'map-tool'}
+              aria-expanded={drawMenuOpen}
+              aria-controls="geometry-tools"
+              onClick={() => {
+                const nextOpen = !drawMenuOpen
+                setDrawMenuOpen(nextOpen)
+                setDrawingTool(nextOpen ? 'polygon' : 'pan')
+              }}
+            >
+              Draw geometry
+            </button>
+            {drawMenuOpen && (
+              <div id="geometry-tools" className="geometry-menu" role="group" aria-label="Geometry controls">
+                <span className="geometry-menu-label">Polygon</span>
+                {draftPoints.length >= 3 && <button type="button" className="map-tool" onClick={finishPolygon}>Finish shape</button>}
+                {(draftPoints.length > 0 || drawnShapes.length > 0) && (
+                  <button
+                    type="button"
+                    className="map-tool"
+                    onClick={() => {
+                      if (draftPoints.length > 0) setDraftPoints((points) => points.slice(0, -1))
+                      else setDrawnShapes((shapes) => shapes.slice(0, -1))
+                    }}
+                  >
+                    Undo
+                  </button>
+                )}
+                {drawnShapes.length > 0 && <button type="button" className="map-tool" onClick={() => { setDraftPoints([]); setDrawnShapes([]) }}>Clear drawings</button>}
+              </div>
+            )}
+            <span className="map-tool-hint">{drawMenuOpen ? 'Click map to add polygon vertices' : 'Pan and zoom the map normally'}</span>
           </div>
 
-          <div className="map-canvas" aria-label="Parcel map">
-            <div className="grid-lines" aria-hidden="true" />
-            {mapShapes.map((shape) => (
-              <button
-                key={shape.id}
-                type="button"
-                className={`parcel-shape ${selectedId === shape.id ? 'selected' : ''}`}
-                style={{ clipPath: `polygon(${shape.points})` }}
-                aria-label={`Select ${shape.id}`}
-                onClick={() => setSelectedId(shape.id)}
-              >
-                <span>{shape.id === 'plot-7a' ? '7A' : shape.id === 'plot-3b' ? '3B' : '9C'}</span>
-              </button>
-            ))}
-            <div className="map-marker">
-              <span className="marker-dot" />
-            </div>
+          <div className={`map-canvas ${drawingTool}`} aria-label="Google Maps parcel selection map">
+            {googleMapsApiKey ? (
+              <APIProvider apiKey={googleMapsApiKey} libraries={['geometry']}>
+                <GoogleMap
+                  defaultCenter={{ lat: 26.95, lng: 94.63 }}
+                  defaultZoom={14}
+                  mapTypeId="satellite"
+                  gestureHandling={drawingTool === 'pan' ? 'greedy' : 'none'}
+                  disableDoubleClickZoom={drawingTool !== 'pan'}
+                  reuseMaps
+                  style={{ width: '100%', height: '100%' }}
+                >
+                  <MapDrawingController
+                    drawingTool={drawingTool}
+                    setDraftPoints={setDraftPoints}
+                  />
+                  {drawnShapes.map((shape) => (
+                    <Polygon
+                      key={shape.id}
+                      paths={shape.points}
+                      options={{ fillColor: '#0a0a0a', fillOpacity: 0.2, strokeColor: '#0a0a0a', strokeWeight: 3, clickable: false }}
+                    />
+                  ))}
+                  {draftPoints.length > 1 && (
+                    <Polyline
+                      path={draftPoints}
+                      options={{ strokeColor: '#ffffff', strokeWeight: 3, clickable: false }}
+                    />
+                  )}
+                  {draftPoints.length > 2 && drawingTool === 'polygon' && (
+                    <Polygon
+                      paths={draftPoints}
+                      options={{ fillColor: '#fafafa', fillOpacity: 0.25, strokeColor: '#0a0a0a', strokeWeight: 2, clickable: false }}
+                    />
+                  )}
+                </GoogleMap>
+              </APIProvider>
+            ) : (
+              <div className="map-setup-message">
+                <strong>Google Maps API key required</strong>
+                <p>Add <code>VITE_GOOGLE_MAPS_API_KEY</code> to <code>.env.local</code> and enable the Maps JavaScript API for the key.</p>
+              </div>
+            )}
           </div>
 
-          <div className="selection-toolbar" role="tablist" aria-label="Parcel tabs">
-            {parcelData.map((parcel) => (
-              <button
-                key={parcel.id}
-                type="button"
-                className={`selection-chip ${selectedId === parcel.id ? 'selected' : ''}`}
-                onClick={() => setSelectedId(parcel.id)}
-              >
-                {parcel.name.split('/')[0].trim()}
-              </button>
-            ))}
-          </div>
         </section>
 
         <aside className="info-panel panel">
@@ -373,7 +426,7 @@ function App() {
             </div>
             <div>
               <dt>Selected area</dt>
-              <dd>{selectionArea}</dd>
+              <dd>{selectedParcel.selectedArea}</dd>
             </div>
             <div>
               <dt>Mutation</dt>
@@ -388,21 +441,6 @@ function App() {
               <dd>{selectedParcel.score}/100</dd>
             </div>
           </dl>
-
-          <div className="selection-meter">
-            <div className="selection-meter-header">
-              <label htmlFor="selectionRange">Transaction selection</label>
-              <strong>{selectedAreaPercent}%</strong>
-            </div>
-            <input
-              id="selectionRange"
-              type="range"
-              min="20"
-              max="100"
-              value={selectedAreaPercent}
-              onChange={(event) => setSelectedAreaPercent(Number(event.target.value))}
-            />
-          </div>
 
           <div className="summary-box">
             <p>{selectedParcel.summary}</p>
@@ -427,10 +465,6 @@ function App() {
             </div>
           </div>
 
-          <div className="stakeholder-box">
-            <span className="eyebrow">Role lens</span>
-            <p>{roleGuidance[selectedRole]}</p>
-          </div>
         </aside>
       </main>
 
