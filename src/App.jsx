@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { APIProvider, Map as GoogleMap, Polygon, Polyline, useMap } from '@vis.gl/react-google-maps'
+import { MapContainer, Polygon, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
 import './App.css'
 
 const parcelData = [
@@ -207,41 +208,104 @@ const parcelData = [
   },
 ]
 
-const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+function MapClickHandler({ enabled, onMapClick }) {
+  useMapEvents({
+    click(event) {
+      if (enabled) onMapClick([event.latlng.lat, event.latlng.lng])
+    },
+  })
 
-function MapDrawingController({ drawingTool, setDraftPoints }) {
   const map = useMap()
-
   useEffect(() => {
-    if (!map) return undefined
-
-    const drawing = drawingTool !== 'pan'
-    map.setOptions({
-      draggable: !drawing,
-      gestureHandling: drawing ? 'none' : 'greedy',
-      disableDoubleClickZoom: drawing,
-    })
-
-    if (drawingTool === 'polygon') {
-      const clickListener = map.addListener('click', (event) => {
-        if (!event.latLng) return
-        setDraftPoints((points) => [...points, event.latLng.toJSON()])
-      })
-      return () => clickListener.remove()
-    }
-
-    return undefined
-  }, [drawingTool, map, setDraftPoints])
+    if (enabled) map.dragging.disable()
+    else map.dragging.enable()
+    return () => map.dragging.enable()
+  }, [enabled, map])
 
   return null
 }
 
-function App() {
-  const [transactionIntent, setTransactionIntent] = useState('Sale deed transfer')
-  const [drawingTool, setDrawingTool] = useState('pan')
+function MapDrawingSurface({ onShapeCountChange }) {
   const [drawMenuOpen, setDrawMenuOpen] = useState(false)
   const [drawnShapes, setDrawnShapes] = useState([])
   const [draftPoints, setDraftPoints] = useState([])
+
+  useEffect(() => {
+    onShapeCountChange?.(drawnShapes.length)
+  }, [drawnShapes, onShapeCountChange])
+
+  const finishPolygon = () => {
+    if (draftPoints.length < 3) return
+    setDrawnShapes((shapes) => [...shapes, { id: Date.now(), points: draftPoints }])
+    setDraftPoints([])
+  }
+
+  return (
+    <>
+      <div className="map-tools" role="toolbar" aria-label="Map drawing tools">
+        <button
+          type="button"
+          className={drawMenuOpen ? 'map-tool active' : 'map-tool'}
+          aria-expanded={drawMenuOpen}
+          aria-controls="geometry-tools"
+          onClick={() => {
+            setDrawMenuOpen((isOpen) => !isOpen)
+            setDraftPoints([])
+          }}
+        >
+          Draw geometry
+        </button>
+        {drawMenuOpen && (
+          <div id="geometry-tools" className="geometry-menu" role="group" aria-label="Geometry controls">
+            <span className="geometry-menu-label">Polygon</span>
+            {draftPoints.length >= 3 && <button type="button" className="map-tool" onClick={finishPolygon}>Finish shape</button>}
+            {(draftPoints.length > 0 || drawnShapes.length > 0) && (
+              <button
+                type="button"
+                className="map-tool"
+                onClick={() => {
+                  if (draftPoints.length > 0) setDraftPoints((points) => points.slice(0, -1))
+                  else setDrawnShapes((shapes) => shapes.slice(0, -1))
+                }}
+              >
+                Undo
+              </button>
+            )}
+            {drawnShapes.length > 0 && <button type="button" className="map-tool" onClick={() => { setDraftPoints([]); setDrawnShapes([]) }}>Clear drawings</button>}
+          </div>
+        )}
+        <span className="map-tool-hint">{drawMenuOpen ? 'Click map to add polygon vertices' : 'Drag to pan · scroll to zoom'}</span>
+      </div>
+      <div className={`map-canvas ${drawMenuOpen ? 'drawing' : ''}`} aria-label="OpenStreetMap parcel selection map">
+        <MapContainer
+          className="leaflet-map"
+          center={[26.98, 94.64]}
+          zoom={13}
+          scrollWheelZoom
+          doubleClickZoom={!drawMenuOpen}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapClickHandler
+            enabled={drawMenuOpen}
+            onMapClick={(point) => setDraftPoints((points) => [...points, point])}
+          />
+          {drawnShapes.map((shape) => (
+            <Polygon key={shape.id} positions={shape.points} pathOptions={{ color: '#0a0a0a', fillColor: '#0a0a0a', fillOpacity: 0.2, weight: 3 }} />
+          ))}
+          {draftPoints.length > 1 && <Polyline positions={draftPoints} pathOptions={{ color: '#ffffff', weight: 3 }} />}
+          {draftPoints.length > 2 && <Polygon positions={draftPoints} pathOptions={{ color: '#0a0a0a', fillColor: '#fafafa', fillOpacity: 0.25, weight: 2 }} />}
+        </MapContainer>
+      </div>
+    </>
+  )
+}
+
+function OfficerPlatform({ officer, onSignOut, blank = false }) {
+  const [transactionIntent, setTransactionIntent] = useState('Sale deed transfer')
+  const [drawnShapeCount, setDrawnShapeCount] = useState(0)
 
   const selectedParcel = parcelData[0]
 
@@ -254,14 +318,6 @@ function App() {
         ? 'No material mismatch or restriction was found in the available records.'
         : 'Record data is broadly consistent, but condition checks still require review.'
 
-  const finishPolygon = () => {
-    if (draftPoints.length < 3) return
-    setDrawnShapes((shapes) => [...shapes, { id: Date.now(), points: draftPoints }])
-    setDraftPoints([])
-    setDrawingTool('pan')
-    setDrawMenuOpen(false)
-  }
-
   const handleGenerateReport = () => {
     const report = [
       'Project Axiom — Land Transaction Pre-Flight Check',
@@ -270,7 +326,7 @@ function App() {
       `Status: ${selectedParcel.status}`,
       `Intent: ${transactionIntent}`,
       `Selected transaction area: ${selectedParcel.selectedArea}`,
-      `User-drawn shapes: ${drawnShapes.length}`,
+      `User-drawn shapes: ${drawnShapeCount}`,
       `Owner: ${selectedParcel.owner}`,
       `Circle: ${selectedParcel.circle}`,
       '',
@@ -295,6 +351,8 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
+  if (blank) return <main className="blank-workspace" aria-label="Signed-in workspace" />
+
   return (
     <div className="shell">
       <header className="topbar">
@@ -311,7 +369,11 @@ function App() {
           <button type="button" className="nav-link">Dashboards</button>
           <button type="button" className="nav-link">Field workflow</button>
         </nav>
-        <button type="button" className="primary-button" onClick={handleGenerateReport}>Generate report</button>
+        <div className="officer-session">
+          <span>{officer.name}</span>
+          <button type="button" className="secondary-button" onClick={onSignOut}>Sign out</button>
+          <button type="button" className="primary-button" onClick={handleGenerateReport}>Generate report</button>
+        </div>
       </header>
 
       <main className="layout">
@@ -324,86 +386,7 @@ function App() {
             <span className="demo-tag">Demonstration data</span>
           </div>
 
-          <div className="map-tools" role="toolbar" aria-label="Map drawing tools">
-            <button
-              type="button"
-              className={drawMenuOpen ? 'map-tool active' : 'map-tool'}
-              aria-expanded={drawMenuOpen}
-              aria-controls="geometry-tools"
-              onClick={() => {
-                const nextOpen = !drawMenuOpen
-                setDrawMenuOpen(nextOpen)
-                setDrawingTool(nextOpen ? 'polygon' : 'pan')
-              }}
-            >
-              Draw geometry
-            </button>
-            {drawMenuOpen && (
-              <div id="geometry-tools" className="geometry-menu" role="group" aria-label="Geometry controls">
-                <span className="geometry-menu-label">Polygon</span>
-                {draftPoints.length >= 3 && <button type="button" className="map-tool" onClick={finishPolygon}>Finish shape</button>}
-                {(draftPoints.length > 0 || drawnShapes.length > 0) && (
-                  <button
-                    type="button"
-                    className="map-tool"
-                    onClick={() => {
-                      if (draftPoints.length > 0) setDraftPoints((points) => points.slice(0, -1))
-                      else setDrawnShapes((shapes) => shapes.slice(0, -1))
-                    }}
-                  >
-                    Undo
-                  </button>
-                )}
-                {drawnShapes.length > 0 && <button type="button" className="map-tool" onClick={() => { setDraftPoints([]); setDrawnShapes([]) }}>Clear drawings</button>}
-              </div>
-            )}
-            <span className="map-tool-hint">{drawMenuOpen ? 'Click map to add polygon vertices' : 'Pan and zoom the map normally'}</span>
-          </div>
-
-          <div className={`map-canvas ${drawingTool}`} aria-label="Google Maps parcel selection map">
-            {googleMapsApiKey ? (
-              <APIProvider apiKey={googleMapsApiKey} libraries={['geometry']}>
-                <GoogleMap
-                  defaultCenter={{ lat: 26.95, lng: 94.63 }}
-                  defaultZoom={14}
-                  mapTypeId="satellite"
-                  gestureHandling={drawingTool === 'pan' ? 'greedy' : 'none'}
-                  disableDoubleClickZoom={drawingTool !== 'pan'}
-                  reuseMaps
-                  style={{ width: '100%', height: '100%' }}
-                >
-                  <MapDrawingController
-                    drawingTool={drawingTool}
-                    setDraftPoints={setDraftPoints}
-                  />
-                  {drawnShapes.map((shape) => (
-                    <Polygon
-                      key={shape.id}
-                      paths={shape.points}
-                      options={{ fillColor: '#0a0a0a', fillOpacity: 0.2, strokeColor: '#0a0a0a', strokeWeight: 3, clickable: false }}
-                    />
-                  ))}
-                  {draftPoints.length > 1 && (
-                    <Polyline
-                      path={draftPoints}
-                      options={{ strokeColor: '#ffffff', strokeWeight: 3, clickable: false }}
-                    />
-                  )}
-                  {draftPoints.length > 2 && drawingTool === 'polygon' && (
-                    <Polygon
-                      paths={draftPoints}
-                      options={{ fillColor: '#fafafa', fillOpacity: 0.25, strokeColor: '#0a0a0a', strokeWeight: 2, clickable: false }}
-                    />
-                  )}
-                </GoogleMap>
-              </APIProvider>
-            ) : (
-              <div className="map-setup-message">
-                <strong>Google Maps API key required</strong>
-                <p>Add <code>VITE_GOOGLE_MAPS_API_KEY</code> to <code>.env.local</code> and enable the Maps JavaScript API for the key.</p>
-              </div>
-            )}
-          </div>
+          <MapDrawingSurface onShapeCountChange={setDrawnShapeCount} />
 
         </section>
 
@@ -620,6 +603,150 @@ function App() {
       </section>
     </div>
   )
+}
+
+function PublicLanding({ onOfficerAccess }) {
+  return (
+    <div className="public-shell">
+      <header className="landing-topbar">
+        <a className="brand-block" href="#top" aria-label="Project Axiom home">
+          <span className="brand-mark">A</span>
+          <span>
+            <span className="brand-name">Project Axiom</span>
+            <span className="brand-subtitle">Land transaction pre-flight</span>
+          </span>
+        </a>
+        <span className="public-access-label">PUBLIC ACCESS · NO LOGIN REQUIRED</span>
+        <button type="button" className="secondary-button" onClick={onOfficerAccess}>Organization Login</button>
+      </header>
+
+      <main id="top">
+        <section className="landing-hero">
+          <div className="landing-hero-copy">
+            <span className="eyebrow">A clearer start to a land transaction</span>
+            <h1>Know the land<br />before the deal.</h1>
+            <p>Explore a proposed parcel, draw the area in question, and see what may need further verification before a transaction begins.</p>
+            <a className="primary-button landing-cta" href="#public-map">Open the public map <span aria-hidden="true">↓</span></a>
+          </div>
+          <div className="landing-hero-index" aria-label="Preliminary verification notice">
+            <span className="index-number">01</span>
+            <span className="index-rule" />
+            <p>PRELIMINARY<br />INFORMATION ONLY</p>
+            <small>Not a title certificate or legal clearance.</small>
+          </div>
+        </section>
+
+        <section className="public-map-section" id="public-map">
+          <div className="public-section-heading">
+            <div>
+              <span className="eyebrow">Open access map</span>
+              <h2>Start with the area you mean.</h2>
+            </div>
+            <p>Pan the illustrative map and draw a polygon around the land you want to examine. No account is needed.</p>
+          </div>
+          <div className="public-map-frame">
+            <MapDrawingSurface />
+          </div>
+          <p className="map-disclaimer">Demonstration map only. User-drawn shapes do not establish legal parcel boundaries or ownership.</p>
+        </section>
+      </main>
+
+      <footer className="landing-footer">
+        <span>PROJECT AXIOM</span>
+        <span>Preliminary verification · Assam</span>
+      </footer>
+    </div>
+  )
+}
+
+function OfficerAccess({ onLogin, onBack }) {
+  const [error, setError] = useState('')
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get('email')).trim().toLowerCase()
+    const password = String(formData.get('password'))
+    const result = onLogin({ email, password })
+    setError(result ?? '')
+  }
+
+  return (
+    <main className="access-page">
+      <header className="access-topbar">
+        <a className="brand-block" href="#top" onClick={(event) => { event.preventDefault(); onBack() }}>
+          <span className="brand-mark">A</span>
+          <span>
+            <span className="brand-name">Project Axiom</span>
+            <span className="brand-subtitle">Organization access</span>
+          </span>
+        </a>
+        <button type="button" className="nav-link" onClick={onBack}>Back to public map</button>
+      </header>
+
+      <section className="access-content">
+        <div className="access-intro">
+          <span className="eyebrow">Partner and official access</span>
+          <h1>Organization login</h1>
+          <p>Sign in with an email address from an approved organization domain.</p>
+        </div>
+
+        <div className="access-form-wrap">
+          <form className="access-form" onSubmit={handleSubmit}>
+            <label>
+              Organization email
+              <input name="email" type="email" autoComplete="email" required />
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" autoComplete="current-password" required />
+            </label>
+            {error && <p className="form-error" role="alert">{error}</p>}
+            <button type="submit" className="primary-button access-submit">Sign in</button>
+          </form>
+          <div className="domain-hint">
+            <span>Accepted domains</span>
+            <p>circle-office.assam.gov.in<br />register-office.assam.gov.in<br />bank.gov.in<br />adc.assam.gov.in<br />dc.assam.gov.in</p>
+          </div>
+          <p className="prototype-note">Showcase login only. The shared password and domain checks run in the browser and do not verify identity. Do not use for real accounts.</p>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+function App() {
+  const [page, setPage] = useState('public')
+  const [officer, setOfficer] = useState(null)
+
+  const loginOfficer = ({ email, password }) => {
+    const rolesByDomain = {
+      'circle-office.assam.gov.in': 'Circle Officer',
+      'register-office.assam.gov.in': 'Registration Officer',
+      'bank.gov.in': 'Bank',
+      'adc.assam.gov.in': 'Assistant District Commissioner',
+      'dc.assam.gov.in': 'District Commissioner',
+    }
+    const emailParts = email.split('@')
+    const role = emailParts.length === 2 ? rolesByDomain[emailParts[1]] : null
+
+    if (!role) return 'Use an email address from one of the accepted organization domains.'
+    if (password !== 'Axiom@2026') return 'The password is incorrect.'
+
+    setOfficer({ email, role })
+    setPage('officer')
+    return ''
+  }
+
+  if (page === 'officer' && officer) {
+    return <OfficerPlatform officer={officer} blank />
+  }
+
+  if (page === 'access') {
+    return <OfficerAccess onLogin={loginOfficer} onBack={() => setPage('public')} />
+  }
+
+  return <PublicLanding onOfficerAccess={() => setPage('access')} />
 }
 
 export default App
