@@ -793,25 +793,67 @@ h4 {
   font-size: 0.82rem;
 }
 
-.domain-hint {
+.demo-login-options {
   border-top: 1px solid #d4d4d8;
   margin-top: 24px;
   padding-top: 16px;
 }
 
-.domain-hint > span {
+.demo-login-options summary {
+  width: fit-content;
+  color: #0a0a0a;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.demo-login-options ul {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 14px 0 0;
+  list-style: none;
+}
+
+.demo-login-options li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-top: 1px solid #e4e4e7;
+  color: #52525b;
+  font-size: 0.74rem;
+}
+
+.demo-login-options code,
+.demo-password code {
+  color: #0a0a0a;
+  font-family: 'IBM Plex Mono', Consolas, monospace;
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.demo-password {
+  margin: 14px 0 0;
+  color: #52525b;
+  font-size: 0.75rem;
+}
+
+.dashboard-intro-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dashboard-intro-actions .secondary-button {
+  white-space: nowrap;
+}
+
+.demo-login-options > span {
   color: #71717a;
   font-size: 0.7rem;
   text-transform: uppercase;
-}
-
-.domain-hint p {
-  margin: 8px 0 0;
-  color: #3f3f46;
-  font-family: 'IBM Plex Mono', Consolas, monospace;
-  font-size: 0.75rem;
-  line-height: 1.8;
-  overflow-wrap: anywhere;
 }
 
 .prototype-note {
@@ -821,13 +863,280 @@ h4 {
   line-height: 1.6;
 }
 
-.blank-workspace {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  min-height: 100vh;
+.role-dashboard-shell {
+  width: min(1320px, calc(100vw - 64px));
+  margin: 0 auto;
+  padding: 22px 0 64px;
+}
+
+.dashboard-topbar {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d4d4d8;
+}
+
+.dashboard-user {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #71717a;
+  font-size: 0.78rem;
+}
+
+.role-dashboard-main {
+  padding-top: 40px;
+}
+
+.dashboard-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.dashboard-intro h1 {
+  margin: 0 0 10px;
+  font-size: 38px;
+  line-height: 1.15;
+}
+
+.dashboard-intro p {
+  max-width: 700px;
   margin: 0;
-  background: #fff;
+  color: #52525b;
+  line-height: 1.6;
+}
+
+.role-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid #0a0a0a;
+  border-bottom: 1px solid #d4d4d8;
+  margin-bottom: 36px;
+}
+
+.role-metric {
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 22px;
+  border-right: 1px solid #d4d4d8;
+}
+
+.role-metric:first-child {
+  padding-left: 0;
+}
+
+.role-metric:last-child {
+  border-right: 0;
+}
+
+.role-metric span,
+.role-metric small {
+  color: #71717a;
+  font-size: 0.72rem;
+}
+
+.role-metric span {
+  text-transform: uppercase;
+}
+
+.role-metric strong {
+  color: #0a0a0a;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.role-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.75fr);
+  gap: 44px;
+  min-width: 0;
+}
+
+.role-worklist,
+.role-side-column {
+  min-width: 0;
+}
+
+.role-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.role-section-heading h2,
+.role-focus h2,
+.role-activity h2 {
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.record-count {
+  color: #71717a;
+  font-size: 0.74rem;
+}
+
+.role-table-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.role-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.role-table th {
+  padding: 12px 14px;
+  border-top: 1px solid #d4d4d8;
+  border-bottom: 1px solid #d4d4d8;
+  color: #71717a;
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.role-table td {
+  padding: 15px 14px;
+  border-bottom: 1px solid #e4e4e7;
+  color: #27272a;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.role-table th:first-child,
+.role-table td:first-child {
+  padding-left: 0;
+  color: #0a0a0a;
+  font-weight: 600;
+}
+
+.dashboard-disclaimer {
+  margin: 14px 0 0;
+  color: #71717a;
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.role-side-column {
+  display: grid;
+  align-content: start;
+  gap: 30px;
+}
+
+.role-focus,
+.role-activity {
+  border-top: 1px solid #0a0a0a;
+  padding-top: 16px;
+}
+
+.role-focus ul,
+.role-activity ul {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 12px 0 0;
+  list-style: none;
+}
+
+.role-focus li,
+.role-activity li {
+  padding: 11px 0;
+  border-top: 1px solid #e4e4e7;
+  color: #52525b;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .role-dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .role-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .role-metric:nth-child(2) {
+    border-right: 0;
+  }
+
+  .role-metric:nth-child(n + 3) {
+    border-top: 1px solid #d4d4d8;
+  }
+}
+
+@media (max-width: 600px) {
+  .role-dashboard-shell {
+    width: min(100vw - 32px, 1320px);
+  }
+
+  .dashboard-topbar,
+  .dashboard-intro {
+    align-items: flex-start;
+  }
+
+  .dashboard-user {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    text-align: right;
+  }
+
+  .dashboard-user > span {
+    max-width: 180px;
+    overflow-wrap: anywhere;
+  }
+
+  .role-dashboard-main {
+    padding-top: 28px;
+  }
+
+  .dashboard-intro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-intro h1 {
+    font-size: 32px;
+  }
+
+  .role-metric {
+    min-height: 118px;
+    padding: 14px;
+  }
+
+  .role-metric:first-child {
+    padding-left: 0;
+  }
+
+  .role-metric strong {
+    font-size: 28px;
+  }
+
+  .role-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .role-table {
+    min-width: 620px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -906,6 +1215,11 @@ h4 {
 
   .officer-session > span {
     flex-basis: 100%;
+  }
+
+  .demo-login-options li {
+    flex-direction: column;
+    gap: 4px;
   }
 }
 
