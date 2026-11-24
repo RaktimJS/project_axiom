@@ -1,0 +1,686 @@
+{
+  "version": 1,
+  "transactions": [
+    {
+      "id": "TX-2048",
+      "title": "Sale deed transfer · Dag 214",
+      "transactionType": "Sale deed transfer",
+      "status": "Submitted for revenue examination",
+      "stage": "revenue_examination",
+      "stageLabel": "Revenue examination",
+      "parcel": {
+        "name": "Plot 7A / Dag No. 214",
+        "village": "Kachari Gaon",
+        "circle": "Sivasagar Revenue Circle",
+        "district": "Sivasagar",
+        "recordedArea": "2,480 sq m",
+        "transactionArea": "0.62 ha"
+      },
+      "buyerEmail": "buyer@buyer.axiom.demo",
+      "sellerEmail": "seller@seller.axiom.demo",
+      "citizenEmail": "citizen@citizen.axiom.demo",
+      "allowedRoles": [
+        "Circle Officer",
+        "Registration Officer",
+        "Bank",
+        "Assistant District Commissioner",
+        "District Commissioner",
+        "Field Survey Officer",
+        "Lat-Mandal"
+      ],
+      "requiredDocuments": [
+        "Sale agreement",
+        "Transfer / NOC application",
+        "Buyer identity record",
+        "Seller identity record",
+        "Land record copy"
+      ],
+      "documents": [
+        {
+          "id": "DOC-2048-01",
+          "type": "Sale agreement",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-001"
+        },
+        {
+          "id": "DOC-2048-02",
+          "type": "Transfer / NOC application",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-002"
+        },
+        {
+          "id": "DOC-2048-03",
+          "type": "Buyer identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-003"
+        },
+        {
+          "id": "DOC-2048-04",
+          "type": "Seller identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-004"
+        },
+        {
+          "id": "DOC-2048-05",
+          "type": "Land record copy",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-005"
+        },
+        {
+          "id": "DOC-d6e86923-a6eb-4edb-bd64-380b3845826f",
+          "type": "Field verification report",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-65adf660-ac45-4c2c-9597-43d377b73ad0",
+          "uploadedBy": "surveyor@field-survey.axiom.demo",
+          "uploadedByRole": "Field Survey Officer",
+          "uploadedAt": "2026-11-24T13:37:39.886Z",
+          "lockedToOthers": true
+        }
+      ],
+      "findings": [
+        "Selected area differs from the recorded area by 12%.",
+        "A historical encumbrance entry requires examination."
+      ],
+      "decision": null,
+      "registration": {
+        "status": "Not started",
+        "reference": null
+      },
+      "mutation": {
+        "status": "Not started",
+        "reference": null
+      },
+      "createdAt": "2026-11-24T09:42:00.000Z",
+      "updatedAt": "2026-11-24T13:37:39.886Z",
+      "events": [
+        {
+          "id": "EV-2048-01",
+          "at": "2026-11-24T09:42:00.000Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Submitted transaction preparation packet",
+          "official": false
+        },
+        {
+          "id": "EV-7e2fcaef-6535-4a66-97ed-ba34e8b46251",
+          "at": "2026-11-24T13:34:55.753Z",
+          "actor": "surveyor@field-survey.axiom.demo",
+          "role": "Field Survey Officer",
+          "action": "Uploaded Field verification report",
+          "note": "Mock upload only; the selected file bytes were not uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-52e899bf-8748-4e7e-914f-d043501799af",
+          "at": "2026-11-24T13:37:39.844Z",
+          "actor": "surveyor@field-survey.axiom.demo",
+          "role": "Field Survey Officer",
+          "action": "Removed Field verification report reference",
+          "note": "Authorized uploader removed the mock attachment reference.",
+          "official": false
+        },
+        {
+          "id": "EV-dc8f4630-e968-4a6c-98a7-b25be415b5e4",
+          "at": "2026-11-24T13:37:39.886Z",
+          "actor": "surveyor@field-survey.axiom.demo",
+          "role": "Field Survey Officer",
+          "action": "Uploaded Field verification report",
+          "note": "Mock upload only; the selected file bytes were not uploaded or stored.",
+          "official": false
+        }
+      ]
+    },
+    {
+      "id": "TX-2044",
+      "title": "Transfer review · Dag 611",
+      "transactionType": "Sale deed transfer",
+      "status": "Authority review required",
+      "stage": "authority_decision",
+      "stageLabel": "Competent authority review",
+      "parcel": {
+        "name": "Plot 9C / Dag No. 611",
+        "village": "Nagaon East",
+        "circle": "Nagaon Revenue Circle",
+        "district": "Nagaon",
+        "recordedArea": "3,710 sq m",
+        "transactionArea": "0.91 ha"
+      },
+      "buyerEmail": "buyer@buyer.axiom.demo",
+      "sellerEmail": "seller@seller.axiom.demo",
+      "citizenEmail": "citizen@citizen.axiom.demo",
+      "allowedRoles": [
+        "Circle Officer",
+        "Registration Officer",
+        "Bank",
+        "Assistant District Commissioner",
+        "District Commissioner",
+        "Field Survey Officer",
+        "Lat-Mandal"
+      ],
+      "requiredDocuments": [
+        "Sale agreement",
+        "Transfer / NOC application",
+        "Buyer identity record",
+        "Seller identity record",
+        "Land record copy"
+      ],
+      "documents": [
+        {
+          "id": "DOC-2044-01",
+          "type": "Sale agreement",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-006"
+        },
+        {
+          "id": "DOC-2044-02",
+          "type": "Transfer / NOC application",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-007"
+        },
+        {
+          "id": "DOC-2044-03",
+          "type": "Buyer identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-008"
+        },
+        {
+          "id": "DOC-2044-04",
+          "type": "Seller identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-009"
+        },
+        {
+          "id": "DOC-2044-05",
+          "type": "Land record copy",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-010"
+        }
+      ],
+      "findings": [
+        "A recorded land-use restriction is present in the demonstration record."
+      ],
+      "decision": {
+        "status": "Pending",
+        "reference": null,
+        "official": false
+      },
+      "registration": {
+        "status": "Not started",
+        "reference": null
+      },
+      "mutation": {
+        "status": "Not started",
+        "reference": null
+      },
+      "createdAt": "2026-11-22T11:15:00.000Z",
+      "updatedAt": "2026-11-24T08:30:00.000Z",
+      "events": [
+        {
+          "id": "EV-2044-01",
+          "at": "2026-11-22T11:15:00.000Z",
+          "actor": "latmandal@lat-mandal.axiom.demo",
+          "role": "Lat-Mandal",
+          "action": "Completed demonstration record examination",
+          "official": false
+        },
+        {
+          "id": "EV-2044-02",
+          "at": "2026-11-24T08:30:00.000Z",
+          "actor": "system",
+          "role": "System",
+          "action": "Forwarded to authority review queue",
+          "official": false
+        }
+      ]
+    },
+    {
+      "id": "TX-2039",
+      "title": "Mortgage review · Dag 456",
+      "transactionType": "Mortgage review",
+      "status": "Registration evidence pending",
+      "stage": "registration",
+      "stageLabel": "Registration",
+      "parcel": {
+        "name": "Plot 3B / Dag No. 456",
+        "village": "Bokakhat",
+        "circle": "Golaghat Revenue Circle",
+        "district": "Golaghat",
+        "recordedArea": "1,980 sq m",
+        "transactionArea": "0.49 ha"
+      },
+      "buyerEmail": "buyer@buyer.axiom.demo",
+      "sellerEmail": "seller@seller.axiom.demo",
+      "citizenEmail": "citizen@citizen.axiom.demo",
+      "allowedRoles": [
+        "Registration Officer",
+        "Bank",
+        "Assistant District Commissioner",
+        "District Commissioner",
+        "Circle Officer",
+        "Lat-Mandal"
+      ],
+      "requiredDocuments": [
+        "Sale agreement",
+        "Transfer / NOC application",
+        "Buyer identity record",
+        "Seller identity record",
+        "Land record copy"
+      ],
+      "documents": [
+        {
+          "id": "DOC-2039-01",
+          "type": "Sale agreement",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-011"
+        },
+        {
+          "id": "DOC-2039-02",
+          "type": "Transfer / NOC application",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-012"
+        },
+        {
+          "id": "DOC-2039-03",
+          "type": "Buyer identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-013"
+        },
+        {
+          "id": "DOC-2039-04",
+          "type": "Seller identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-014"
+        },
+        {
+          "id": "DOC-2039-05",
+          "type": "Land record copy",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-015"
+        }
+      ],
+      "findings": [],
+      "decision": {
+        "status": "Recorded for demonstration only",
+        "reference": "MOCK-DEC-2039",
+        "official": false
+      },
+      "registration": {
+        "status": "In progress",
+        "reference": null
+      },
+      "mutation": {
+        "status": "Not started",
+        "reference": null
+      },
+      "createdAt": "2026-11-20T13:05:00.000Z",
+      "updatedAt": "2026-11-23T16:20:00.000Z",
+      "events": [
+        {
+          "id": "EV-2039-01",
+          "at": "2026-11-20T13:05:00.000Z",
+          "actor": "adc@adc.assam.gov.in",
+          "role": "Assistant District Commissioner",
+          "action": "Recorded a demonstration workflow decision",
+          "official": false
+        },
+        {
+          "id": "EV-2039-02",
+          "at": "2026-11-23T16:20:00.000Z",
+          "actor": "system",
+          "role": "System",
+          "action": "Entered registration stage for demonstration",
+          "official": false
+        }
+      ]
+    },
+    {
+      "id": "TX-2037",
+      "title": "Registered transfer · Dag 088",
+      "transactionType": "Sale deed transfer",
+      "status": "Mutation record update pending",
+      "stage": "mutation",
+      "stageLabel": "Post-registration mutation",
+      "parcel": {
+        "name": "Dag No. 088",
+        "village": "Moran",
+        "circle": "Moran Revenue Circle",
+        "district": "Dibrugarh",
+        "recordedArea": "1,250 sq m",
+        "transactionArea": "0.31 ha"
+      },
+      "buyerEmail": "buyer@buyer.axiom.demo",
+      "sellerEmail": "seller@seller.axiom.demo",
+      "citizenEmail": "citizen@citizen.axiom.demo",
+      "allowedRoles": [
+        "Circle Officer",
+        "Registration Officer",
+        "Assistant District Commissioner",
+        "District Commissioner",
+        "Field Survey Officer",
+        "Lat-Mandal"
+      ],
+      "requiredDocuments": [
+        "Sale agreement",
+        "Transfer / NOC application",
+        "Buyer identity record",
+        "Seller identity record",
+        "Land record copy"
+      ],
+      "documents": [
+        {
+          "id": "DOC-2037-01",
+          "type": "Sale agreement",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-70649bca-5c6a-42bb-afbe-33d98bec091c"
+        },
+        {
+          "id": "DOC-2037-02",
+          "type": "Transfer / NOC application",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-017"
+        },
+        {
+          "id": "DOC-2037-03",
+          "type": "Buyer identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-018"
+        },
+        {
+          "id": "DOC-2037-04",
+          "type": "Seller identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-019"
+        },
+        {
+          "id": "DOC-2037-05",
+          "type": "Land record copy",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-020"
+        }
+      ],
+      "findings": [
+        "A field note records a boundary discrepancy for follow-up."
+      ],
+      "decision": {
+        "status": "Recorded for demonstration only",
+        "reference": "MOCK-DEC-2037",
+        "official": false
+      },
+      "registration": {
+        "status": "Recorded for demonstration only",
+        "reference": "MOCK-REG-2037",
+        "official": false
+      },
+      "mutation": {
+        "status": "Pending",
+        "reference": null,
+        "official": false
+      },
+      "createdAt": "2026-11-18T10:00:00.000Z",
+      "updatedAt": "2026-11-24T13:14:38.022Z",
+      "events": [
+        {
+          "id": "EV-2037-01",
+          "at": "2026-11-18T10:00:00.000Z",
+          "actor": "system",
+          "role": "System",
+          "action": "Added registration demonstration record",
+          "official": false
+        },
+        {
+          "id": "EV-2037-02",
+          "at": "2026-11-23T11:10:00.000Z",
+          "actor": "system",
+          "role": "System",
+          "action": "Queued post-registration mutation demonstration",
+          "official": false
+        },
+        {
+          "id": "EV-3f9a2646-5bf1-4048-bfc2-f075eff73449",
+          "at": "2026-11-24T13:14:38.022Z",
+          "actor": "office@circle-office.assam.gov.in",
+          "role": "Circle Officer",
+          "action": "Added mock document reference: Sale agreement",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        }
+      ]
+    },
+    {
+      "id": "TX-2026-22A721",
+      "title": "Sale deed transfer · Demo Dag 901",
+      "transactionType": "Sale deed transfer",
+      "status": "Completed in demonstration workflow only",
+      "stage": "completed_demo",
+      "stageLabel": "Workflow complete (demo only)",
+      "parcel": {
+        "name": "Demo Dag 901",
+        "village": "Demo Gaon",
+        "circle": "Demo Revenue Circle",
+        "district": "Demo District",
+        "recordedArea": "1,200 sq m",
+        "transactionArea": "0.12 ha"
+      },
+      "buyerEmail": "buyer@buyer.axiom.demo",
+      "sellerEmail": "seller@seller.axiom.demo",
+      "citizenEmail": null,
+      "allowedRoles": [
+        "Circle Officer",
+        "Registration Officer",
+        "Assistant District Commissioner",
+        "District Commissioner",
+        "Field Survey Officer",
+        "Lat-Mandal",
+        "Bank"
+      ],
+      "requiredDocuments": [
+        "Sale agreement",
+        "Transfer / NOC application",
+        "Buyer identity record",
+        "Seller identity record",
+        "Land record copy"
+      ],
+      "documents": [
+        {
+          "id": "DOC-eb4a6b1d-e141-4927-a815-e9ce5059d871",
+          "type": "Sale agreement",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-f589bdcb-5691-464c-8dce-8bcfe7c38314"
+        },
+        {
+          "id": "DOC-5dcab5b8-13c8-46b8-a79a-65d89c3cc015",
+          "type": "Transfer / NOC application",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-22dfdba4-5fba-4550-9d43-ba9647228b9c"
+        },
+        {
+          "id": "DOC-1d232538-04c1-4a6a-b69b-fcf0e3a43c18",
+          "type": "Buyer identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-c44dfa0c-8d20-4204-8cd3-32fb7cdd1aab"
+        },
+        {
+          "id": "DOC-d3940572-e6f0-4644-bd56-5ce09e0d6d93",
+          "type": "Seller identity record",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-7ba245bc-2308-4369-a09e-038df3eb41ce"
+        },
+        {
+          "id": "DOC-5e8cdf8a-2f70-49fd-bfda-00f0f20c2067",
+          "type": "Land record copy",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-0d165d42-77a6-48e0-82e7-c0efce3b6f99"
+        },
+        {
+          "id": "DOC-4b27f24a-309c-47e0-90f9-718916d79220",
+          "type": "Registration report",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-56432635-b2bd-4be0-864c-2dde7655a41e"
+        },
+        {
+          "id": "DOC-e0ca9f0f-cda8-4dca-9ae0-5fe743c17ae3",
+          "type": "Mutation application",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-fd5377b8-cdc5-49ab-b402-6ae60c50c6b1"
+        },
+        {
+          "id": "DOC-e6289c7b-f13e-41a1-b2b2-fe81505d0a6d",
+          "type": "Updated land-record extract",
+          "status": "Provided",
+          "mockFileId": "MOCK-FILE-617c7302-47cd-43aa-a490-44864cc51f06"
+        }
+      ],
+      "findings": [
+        "Mock review complete; area discrepancy requires field follow-up."
+      ],
+      "decision": {
+        "status": "Recorded for demonstration only",
+        "reference": "MOCK-DEC-TX-2026-22A721",
+        "official": false,
+        "recordedAt": "2026-11-24T06:39:25.659Z"
+      },
+      "registration": {
+        "status": "Recorded for demonstration only",
+        "reference": "MOCK-REG-TX-2026-22A721",
+        "official": false,
+        "recordedAt": "2026-11-24T06:39:26.680Z"
+      },
+      "mutation": {
+        "status": "Recorded for demonstration only",
+        "reference": "MOCK-MUT-TX-2026-22A721",
+        "official": false,
+        "recordedAt": "2026-11-24T06:39:28.074Z"
+      },
+      "createdAt": "2026-11-24T06:37:32.537Z",
+      "updatedAt": "2026-11-24T06:39:28.074Z",
+      "events": [
+        {
+          "id": "EV-f5113149-3e78-4f20-a3f2-26630a78da57",
+          "at": "2026-11-24T06:37:32.537Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Created transaction preparation case",
+          "note": "Case created in the local demonstration workflow.",
+          "official": false
+        },
+        {
+          "id": "EV-78882b72-a70c-4ec4-953e-1006f996e7ec",
+          "at": "2026-11-24T06:37:32.659Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Added mock document reference: Sale agreement",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-cb27c323-b8ce-4c43-b6ab-fe596dd73e63",
+          "at": "2026-11-24T06:37:32.855Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Added mock document reference: Transfer / NOC application",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-59166980-4b50-4665-9b77-986c858bf7d9",
+          "at": "2026-11-24T06:37:33.056Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Added mock document reference: Buyer identity record",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-a34b391e-ba01-4332-ac09-2772a35420be",
+          "at": "2026-11-24T06:39:09.931Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Added mock document reference: Seller identity record",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-8b4edd58-523b-4654-9af9-40afca3fcbc1",
+          "at": "2026-11-24T06:39:10.152Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Added mock document reference: Land record copy",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-67b7c557-9cca-4dfd-a9af-ab1de8d46132",
+          "at": "2026-11-24T06:39:10.342Z",
+          "actor": "buyer@buyer.axiom.demo",
+          "role": "Buyer",
+          "action": "Submitted preparation packet for revenue examination",
+          "note": "",
+          "official": false
+        },
+        {
+          "id": "EV-9d26fff3-0bfe-4f3e-b474-e84d2dce4f1c",
+          "at": "2026-11-24T06:39:24.809Z",
+          "actor": "officer@circle-office.assam.gov.in",
+          "role": "Circle Officer",
+          "action": "Completed demonstration revenue examination",
+          "note": "Mock review complete; area discrepancy requires field follow-up.",
+          "official": false
+        },
+        {
+          "id": "EV-fbbf635f-860a-4666-8dde-0b545da6f8d5",
+          "at": "2026-11-24T06:39:25.659Z",
+          "actor": "adc@adc.assam.gov.in",
+          "role": "Assistant District Commissioner",
+          "action": "Recorded demonstration authority workflow status",
+          "note": "Recorded for demonstration only. This is not an official decision or NOC.",
+          "official": false
+        },
+        {
+          "id": "EV-33927856-5d43-4b88-b3e9-8645e8f43229",
+          "at": "2026-11-24T06:39:26.462Z",
+          "actor": "officer@register-office.assam.gov.in",
+          "role": "Registration Officer",
+          "action": "Added mock document reference: Registration report",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-02fa30aa-6f1c-4926-b70b-4bcc10d7e6af",
+          "at": "2026-11-24T06:39:26.680Z",
+          "actor": "officer@register-office.assam.gov.in",
+          "role": "Registration Officer",
+          "action": "Recorded demonstration registration status",
+          "note": "This does not represent an official registration.",
+          "official": false
+        },
+        {
+          "id": "EV-c5647076-eb20-43d7-8eee-d9a17b8415d6",
+          "at": "2026-11-24T06:39:27.601Z",
+          "actor": "officer@circle-office.assam.gov.in",
+          "role": "Circle Officer",
+          "action": "Added mock document reference: Mutation application",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-8d605e63-fd06-4431-906b-6802a20e50d1",
+          "at": "2026-11-24T06:39:27.856Z",
+          "actor": "officer@circle-office.assam.gov.in",
+          "role": "Circle Officer",
+          "action": "Added mock document reference: Updated land-record extract",
+          "note": "Mock file reference only; no binary file was uploaded or stored.",
+          "official": false
+        },
+        {
+          "id": "EV-f666b5f5-a5c9-4f09-8e0d-da54c0e741ce",
+          "at": "2026-11-24T06:39:28.074Z",
+          "actor": "officer@circle-office.assam.gov.in",
+          "role": "Circle Officer",
+          "action": "Recorded demonstration mutation status",
+          "note": "This does not represent an official land-record change.",
+          "official": false
+        }
+      ]
+    }
+  ]
+}

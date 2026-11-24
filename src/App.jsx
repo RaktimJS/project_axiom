@@ -208,19 +208,6 @@ const parcelData = [
   },
 ]
 
-const rolesByDomain = {
-  'circle-office.assam.gov.in': 'Circle Officer',
-  'register-office.assam.gov.in': 'Registration Officer',
-  'bank.gov.in': 'Bank',
-  'adc.assam.gov.in': 'Assistant District Commissioner',
-  'dc.assam.gov.in': 'District Commissioner',
-  'citizen.axiom.demo': 'Citizen',
-  'buyer.axiom.demo': 'Buyer',
-  'seller.axiom.demo': 'Seller',
-  'field-survey.axiom.demo': 'Field Survey Officer',
-  'lat-mandal.axiom.demo': 'Lat-Mandal',
-}
-
 const demoLoginExamples = [
   { role: 'Circle Officer', email: 'officer@circle-office.assam.gov.in' },
   { role: 'Registration Officer', email: 'officer@register-office.assam.gov.in' },
@@ -233,6 +220,95 @@ const demoLoginExamples = [
   { role: 'Field Survey Officer', email: 'surveyor@field-survey.axiom.demo' },
   { role: 'Lat-Mandal', email: 'latmandal@lat-mandal.axiom.demo' },
 ]
+
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    credentials: 'same-origin',
+    ...options,
+    headers: {
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...options.headers,
+    },
+  })
+  const result = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(result.error || 'The workflow service could not complete the request.')
+  return result
+}
+
+const workflowStageOrder = ['preparation', 'revenue_examination', 'authority_decision', 'registration', 'mutation', 'completed_demo']
+const workflowStageNames = {
+  preparation: 'Preparation',
+  revenue_examination: 'Revenue examination',
+  authority_decision: 'Authority review (demo)',
+  registration: 'Registration (demo)',
+  mutation: 'Mutation (demo)',
+  completed_demo: 'Complete (demo)',
+  closed_demo: 'Closed (demo)',
+}
+function transactionRow(transaction, role) {
+  const parcel = `${transaction.parcel.name} · ${transaction.parcel.village}`
+  const latestFinding = transaction.findings.at(-1) || transaction.status
+  const nextStep = {
+    preparation: 'Collect required documents',
+    revenue_examination: 'Examine record and geometry',
+    authority_decision: 'Record demo decision',
+    registration: 'Add mock registration report',
+    mutation: 'Record demo mutation step',
+    completed_demo: 'Review demonstration trail',
+    closed_demo: 'No further demo action',
+  }[transaction.stage]
+
+  switch (role) {
+    case 'Citizen':
+    case 'Buyer':
+    case 'Seller':
+      return [transaction.id, parcel, transaction.status, new Date(transaction.updatedAt).toLocaleDateString()]
+    case 'Circle Officer':
+      return [transaction.id, parcel, new Date(transaction.updatedAt).toLocaleString(), latestFinding]
+    case 'Registration Officer':
+      return [transaction.id, parcel, transaction.status, latestFinding]
+    case 'Bank':
+      return [transaction.id, parcel, transaction.status, 'Independent due diligence required']
+    case 'Assistant District Commissioner':
+      return [transaction.id, transaction.parcel.circle, latestFinding, nextStep]
+    case 'District Commissioner':
+      return [transaction.id, transaction.parcel.circle, latestFinding, new Date(transaction.updatedAt).toLocaleDateString()]
+    case 'Field Survey Officer':
+      return [transaction.id, parcel, latestFinding, nextStep]
+    case 'Lat-Mandal':
+      return [transaction.id, parcel, latestFinding, nextStep]
+    default:
+      return [transaction.id, parcel, transaction.status, nextStep]
+  }
+}
+
+function metricValue(label, transactions) {
+  const open = transactions.filter((item) => !['completed_demo', 'closed_demo'].includes(item.stage))
+  const withFindings = transactions.filter((item) => item.findings.length > 0)
+  const missingDocuments = transactions.reduce((count, item) => count + item.requiredDocuments.filter(
+    (type) => !item.documents.some((document) => document.type === type && document.status === 'Provided'),
+  ).length, 0)
+
+  if (label === 'Revenue circles') return new Set(transactions.map((item) => item.parcel.circle)).size
+  if (label === 'Area selections') return transactions.filter((item) => item.parcel.transactionArea).length
+  if (label === 'Ready to examine' || label === 'Field verification' || label === 'Record examinations' || label === 'Field activities') {
+    return transactions.filter((item) => item.stage === 'revenue_examination').length
+  }
+  if (label === 'NOC follow-ups') return transactions.filter((item) => item.stage === 'authority_decision').length
+  if (label === 'Assessments ready') return transactions.filter((item) => ['registration', 'mutation', 'completed_demo'].includes(item.stage)).length
+  if (label === 'Reports submitted') return transactions.reduce((count, item) => count + item.events.filter((event) => event.action.includes('field finding')).length, 0)
+  if (label === 'Documents requested') return missingDocuments
+  if (label === 'Restrictions flagged') return transactions.filter((item) => item.findings.some((finding) => /restrict|classification/i.test(finding))).length
+  if (label === 'Buyer shares') return transactions.filter((item) => item.sellerEmail && item.buyerEmail).length
+  if (label === 'Saved reports' || label === 'Shared reports') return transactions.reduce((count, item) => count + item.documents.filter((document) => document.mockFileId).length, 0)
+  if (label === 'In progress' || label === 'Open cases' || label === 'Assessments received' || label === 'My assessments' || label === 'Properties under review' || label === 'My parcels in review' || label === 'Property reviews' || label === 'Assigned activities' || label === 'Assigned applications' || label === 'Assessments' || label === 'Revenue circles') {
+    return label === 'In progress' ? open.length : transactions.length
+  }
+  if (label === 'Due for visit') return transactions.filter((item) => item.stage === 'revenue_examination').length
+  if (label === 'Registration cases') return transactions.filter((item) => ['registration', 'mutation', 'completed_demo'].includes(item.stage)).length
+  if (/discrep|finding|unresolved|attention|restriction|condition|integrity/i.test(label)) return withFindings.length
+  return open.length
+}
 
 function MapClickHandler({ enabled, onMapClick }) {
   useMapEvents({
@@ -553,8 +629,225 @@ const roleDashboards = {
   },
 }
 
+function WorkflowTransactionDetails({ transaction, role, userEmail, onUpdate, onClose }) {
+  const [decision, setDecision] = useState('recorded_for_demo')
+  const [note, setNote] = useState('')
+  const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
+  const isParty = [transaction.buyerEmail, transaction.sellerEmail, transaction.citizenEmail].includes(userEmail)
+
+  const runRequest = async (url, body, method = 'POST') => {
+    setPending(true)
+    setError('')
+    try {
+      const result = await apiRequest(url, { method, body: JSON.stringify(body) })
+      onUpdate(result.transaction)
+      setNote('')
+      return true
+    } catch (requestError) {
+      setError(requestError.message)
+      return false
+    } finally {
+      setPending(false)
+    }
+  }
+
+  const uploadDocument = async (event, documentType) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const file = form.querySelector('input[type="file"]')?.files?.[0]
+    if (!file) {
+      setError('Choose a file for this required document.')
+      return
+    }
+    const succeeded = await runRequest(`/api/workflow/${transaction.id}/documents`, {
+      documentType,
+      fileName: file.name,
+      mediaType: file.type,
+      fileSize: file.size,
+      lastModified: file.lastModified,
+    })
+    if (succeeded) form.reset()
+  }
+
+  const removeDocument = async (document) => {
+    if (!window.confirm(`Remove your ${document.type} reference? This only removes its mock metadata record.`)) return
+    await runRequest(`/api/workflow/${transaction.id}/documents/${document.id}`, {}, 'DELETE')
+  }
+
+  const runAction = (action) => runRequest(`/api/workflow/${transaction.id}/actions`, { action, note, decision })
+  const stageIndex = workflowStageOrder.indexOf(transaction.stage)
+
+  return (
+    <section className="workflow-case-panel" aria-labelledby="workflow-case-title">
+      <header className="workflow-case-header">
+        <div>
+          <span className="eyebrow">Transaction workflow · Demonstration case</span>
+          <h2 id="workflow-case-title">{transaction.id} · {transaction.parcel.name}</h2>
+          <p>{transaction.parcel.village}, {transaction.parcel.circle} · {transaction.transactionType}</p>
+        </div>
+        <button type="button" className="secondary-button" onClick={onClose}>Close details</button>
+      </header>
+
+      <div className="workflow-steps" aria-label="Transaction stages">
+        {workflowStageOrder.map((stage, index) => (
+          <div key={stage} className={index === stageIndex ? 'workflow-step active' : index < stageIndex ? 'workflow-step complete' : 'workflow-step'}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{workflowStageNames[stage]}</strong>
+          </div>
+        ))}
+      </div>
+
+      <div className="workflow-case-grid">
+        <div className="workflow-documents">
+          <div className="workflow-subheading">
+            <div>
+              <span className="eyebrow">Required documents by workflow stage</span>
+              <h3>Transaction documents</h3>
+            </div>
+            <span>{transaction.parcel.transactionArea}</span>
+          </div>
+          <ul className="document-list">
+            {transaction.documentChecklist.map((item) => {
+              const document = item.document
+              return (
+                <li key={item.type} className="document-row">
+                  <div className="document-title">
+                    <span>{item.type}</span>
+                    <small>Required at {item.stageLabel} · assigned: {item.responsibleRoles.join(', ')}</small>
+                  </div>
+                  <strong className={document ? 'document-provided' : item.status.startsWith('Required now') ? 'document-missing' : 'document-not-due'}>
+                    {document?.status || item.status}
+                  </strong>
+                  {document?.file && (
+                    <small className="document-file-meta">
+                      {document.file.fileName} · {Math.max(1, Math.round((document.file.fileSize || 0) / 1024))} KB · uploaded by {document.uploadedByRole || document.file.uploadedByRole || 'authorized demo user'}
+                    </small>
+                  )}
+                  {item.canUpload && (
+                    <form className="document-upload-form" onSubmit={(event) => uploadDocument(event, item.type)}>
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required aria-label={`Choose ${item.type} file`} />
+                      <button type="submit" className="secondary-button" disabled={pending}>{document ? 'Replace file' : 'Upload file'}</button>
+                    </form>
+                  )}
+                  {item.canRemove && <button type="button" className="document-remove-button" onClick={() => removeDocument(document)} disabled={pending}>Remove</button>}
+                  {document && item.readOnly && <small className="document-lock-note">Read-only to you · uploaded by {document.uploadedByRole || 'another authorized role'}</small>}
+                  {!document && !item.canUpload && <small className="document-lock-note">Upload restricted to {item.responsibleRoles.join(' or ')} during {item.stageLabel}.</small>}
+                </li>
+              )
+            })}
+          </ul>
+          <p className="mock-file-note">Mock upload: selected file contents are not transferred or stored. Only filename, type, size, uploader, and timestamp are written to JSON.</p>
+        </div>
+
+        <aside className="workflow-actions">
+          <span className="eyebrow">Current status</span>
+          <h3>{transaction.status}</h3>
+          <p>Buyer: {transaction.buyerEmail}<br />Seller: {transaction.sellerEmail}</p>
+          {isParty && transaction.stage === 'preparation' && (
+            <button type="button" className="primary-button" onClick={() => runAction('submit_for_revenue_examination')} disabled={pending}>
+              Submit preparation packet
+            </button>
+          )}
+          {['Circle Officer', 'Lat-Mandal'].includes(role) && transaction.stage === 'revenue_examination' && (
+            <>
+              <label htmlFor={`revenue-note-${transaction.id}`}>Examination note</label>
+              <textarea id={`revenue-note-${transaction.id}`} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Record findings for demo review" />
+              <button type="button" className="primary-button" onClick={() => runAction('complete_revenue_examination')} disabled={pending || !note.trim()}>
+                Forward to authority review
+              </button>
+            </>
+          )}
+          {role === 'Field Survey Officer' && transaction.stage === 'revenue_examination' && (
+            <>
+              <label htmlFor={`field-note-${transaction.id}`}>Field finding</label>
+              <textarea id={`field-note-${transaction.id}`} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Record a demonstration field finding" />
+              <button type="button" className="secondary-button" onClick={() => runAction('submit_field_finding')} disabled={pending || !note.trim()}>
+                Submit field finding
+              </button>
+            </>
+          )}
+          {['Assistant District Commissioner', 'District Commissioner'].includes(role) && transaction.stage === 'authority_decision' && (
+            <>
+              <label htmlFor={`decision-${transaction.id}`}>Demo workflow status</label>
+              <select id={`decision-${transaction.id}`} value={decision} onChange={(event) => setDecision(event.target.value)}>
+                <option value="recorded_for_demo">Recorded for demo, continue to registration</option>
+                <option value="more_information">Request more information</option>
+                <option value="not_advanced">Do not advance in demo workflow</option>
+              </select>
+              <button type="button" className="primary-button" onClick={() => runAction('record_demo_authority_decision')} disabled={pending}>
+                Record demo status
+              </button>
+            </>
+          )}
+          {role === 'Registration Officer' && transaction.stage === 'registration' && (
+            <button type="button" className="primary-button" onClick={() => runAction('record_demo_registration')} disabled={pending}>
+              Record demo registration step
+            </button>
+          )}
+          {['Circle Officer', 'Lat-Mandal'].includes(role) && transaction.stage === 'mutation' && (
+            <button type="button" className="primary-button" onClick={() => runAction('record_demo_mutation')} disabled={pending}>
+              Record demo mutation step
+            </button>
+          )}
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <p className="workflow-demo-warning">Workflow actions are demonstration records only. They are not NOC issuance, official registration, legal approval, or a land-record mutation.</p>
+        </aside>
+      </div>
+
+      <div className="workflow-event-trail">
+        <span className="eyebrow">Transaction history</span>
+        <ul>{[...transaction.events].reverse().map((event) => <li key={event.id}><strong>{event.action}</strong><span>{event.role} · {new Date(event.at).toLocaleString()}</span>{event.note && <small>{event.note}</small>}</li>)}</ul>
+      </div>
+    </section>
+  )
+}
+
 function RoleDashboard({ officer, onSignOut, onOpenPublicMap }) {
   const dashboard = roleDashboards[officer.role]
+  const [transactions, setTransactions] = useState([])
+  const [selectedId, setSelectedId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [showNewCase, setShowNewCase] = useState(false)
+  const [savingCase, setSavingCase] = useState(false)
+  const [caseError, setCaseError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    apiRequest('/api/workflow')
+      .then((result) => { if (active) setTransactions(result.transactions) })
+      .catch((requestError) => { if (active) setError(requestError.message) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
+
+  const selectedTransaction = transactions.find((transaction) => transaction.id === selectedId)
+  const updateTransaction = (updatedTransaction) => {
+    setTransactions((current) => current.map((item) => item.id === updatedTransaction.id ? updatedTransaction : item))
+  }
+
+  const createTransaction = async (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    setSavingCase(true)
+    setCaseError('')
+    try {
+      const result = await apiRequest('/api/workflow', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData.entries())),
+      })
+      setTransactions((current) => [result.transaction, ...current])
+      setSelectedId(result.transaction.id)
+      setShowNewCase(false)
+    } catch (requestError) {
+      setCaseError(requestError.message)
+    } finally {
+      setSavingCase(false)
+    }
+  }
+
+  const metricTransactions = transactions
 
   return (
     <div className="role-dashboard-shell">
@@ -580,60 +873,96 @@ function RoleDashboard({ officer, onSignOut, onOpenPublicMap }) {
             <p>{dashboard.description}</p>
           </div>
           <div className="dashboard-intro-actions">
-            {dashboard.actionLabel && <button type="button" className="secondary-button" onClick={onOpenPublicMap}>{dashboard.actionLabel}</button>}
-            <span className="demo-tag">Demonstration data</span>
+            {dashboard.actionLabel && <button type="button" className="secondary-button" onClick={() => setShowNewCase((open) => !open)}>{showNewCase ? 'Close new case' : dashboard.actionLabel}</button>}
+            {['Citizen', 'Buyer', 'Seller'].includes(officer.role) && <button type="button" className="nav-link" onClick={onOpenPublicMap}>Open public map</button>}
+            <span className="demo-tag">JSON demonstration data</span>
           </div>
         </div>
 
         <div className="role-metrics">
-          {dashboard.metrics.map(([label, value, note]) => (
+          {dashboard.metrics.map(([label, _seedValue, note]) => (
             <section className="role-metric" key={label}>
               <span>{label}</span>
-              <strong>{value}</strong>
+              <strong>{metricValue(label, metricTransactions)}</strong>
               <small>{note}</small>
             </section>
           ))}
         </div>
 
+        {showNewCase && (
+          <section className="new-transaction-form">
+            <div className="workflow-subheading">
+              <div><span className="eyebrow">Stage 1 · Transaction preparation</span><h2>Start a transaction case</h2></div>
+              <span className="mock-file-note">JSON-backed demo case</span>
+            </div>
+            <form className="case-create-grid" onSubmit={createTransaction}>
+              <label>Parcel identifier<input name="parcelName" placeholder="Dag or parcel number" required /></label>
+              <label>Village<input name="village" required /></label>
+              <label>Revenue Circle<input name="circle" required /></label>
+              <label>District<input name="district" required /></label>
+              <label>Transaction type<select name="transactionType"><option>Sale deed transfer</option><option>Mortgage review</option><option>Partition</option><option>Other land service</option></select></label>
+              <label>Recorded area<input name="recordedArea" placeholder="For example, 2,480 sq m" /></label>
+              <label>Intended transaction area<input name="transactionArea" placeholder="For example, 0.62 ha" required /></label>
+              <label>Buyer email<input name="buyerEmail" type="email" defaultValue={officer.role === 'Buyer' || officer.role === 'Citizen' ? officer.email : ''} required /></label>
+              <label>Seller email<input name="sellerEmail" type="email" defaultValue={officer.role === 'Seller' ? officer.email : ''} required /></label>
+              <p className="mock-file-note">No official records are fetched. This case and all later decisions are stored as demonstration JSON only.</p>
+              {caseError && <p className="form-error" role="alert">{caseError}</p>}
+              <button className="primary-button" type="submit" disabled={savingCase}>{savingCase ? 'Creating case…' : 'Create transaction case'}</button>
+            </form>
+          </section>
+        )}
+
         <div className="role-dashboard-grid">
           <section className="role-worklist">
             <div className="role-section-heading">
-              <div>
-                <span className="eyebrow">Work queue</span>
-                <h2>{dashboard.queueTitle}</h2>
-              </div>
-              <span className="record-count">{dashboard.rows.length} sample records</span>
+              <div><span className="eyebrow">Work queue</span><h2>{dashboard.queueTitle}</h2></div>
+              <span className="record-count">{loading ? 'Loading JSON cases…' : `${transactions.length} accessible cases`}</span>
             </div>
+            {error && <p className="form-error" role="alert">{error}</p>}
             <div className="role-table-scroll">
               <table className="role-table">
-                <thead>
-                  <tr>{dashboard.columns.map((column) => <th key={column}>{column}</th>)}</tr>
-                </thead>
+                <thead><tr>{dashboard.columns.map((column) => <th key={column}>{column}</th>)}<th>Details</th></tr></thead>
                 <tbody>
-                  {dashboard.rows.map((row) => (
-                    <tr key={row[0]}>
-                      {row.map((cell, index) => <td key={`${row[0]}-${index}`}>{cell}</td>)}
+                  {transactions.map((transaction) => (
+                    <tr key={transaction.id}>
+                      {transactionRow(transaction, officer.role).map((cell, index) => <td key={`${transaction.id}-${index}`}>{cell}</td>)}
+                      <td><button className="case-open-button" type="button" onClick={() => setSelectedId(transaction.id)}>Open case</button></td>
                     </tr>
                   ))}
+                  {!loading && transactions.length === 0 && <tr><td colSpan={dashboard.columns.length + 1}>No cases are currently accessible to this login.</td></tr>}
                 </tbody>
               </table>
             </div>
-            <p className="dashboard-disclaimer">Illustrative records only. This workspace is not connected to official systems and does not record administrative decisions.</p>
+            <p className="dashboard-disclaimer">Case records are read from local JSON files. Mock document references contain no uploaded files. Workflow actions are not official administrative decisions.</p>
           </section>
 
           <aside className="role-side-column">
             <section className="role-focus">
-              <span className="eyebrow">Role-specific workspace</span>
-              <h2>{dashboard.sideTitle}</h2>
+              <span className="eyebrow">Role-specific workspace</span><h2>{dashboard.sideTitle}</h2>
               <ul>{dashboard.sideItems.map((item) => <li key={item}>{item}</li>)}</ul>
             </section>
             <section className="role-activity">
-              <span className="eyebrow">Recent activity</span>
-              <h2>{dashboard.activityTitle}</h2>
-              <ul>{dashboard.activity.map((item) => <li key={item}>{item}</li>)}</ul>
+              <span className="eyebrow">Recent case activity</span><h2>{dashboard.activityTitle}</h2>
+              <ul>
+                {transactions.flatMap((transaction) => transaction.events.map((event) => ({ ...event, transactionId: transaction.id }))).slice(-4).reverse().map((event) => (
+                  <li key={event.id}>{event.transactionId}: {event.action} · {event.role}</li>
+                ))}
+                {!transactions.length && <li>No case activity in this JSON dataset.</li>}
+              </ul>
             </section>
           </aside>
         </div>
+
+        {selectedTransaction && (
+          <WorkflowTransactionDetails
+            key={selectedTransaction.id}
+            transaction={selectedTransaction}
+            role={officer.role}
+            userEmail={officer.email}
+            onUpdate={updateTransaction}
+            onClose={() => setSelectedId(null)}
+          />
+        )}
       </main>
     </div>
   )
@@ -1000,13 +1329,18 @@ function PublicLanding({ onOfficerAccess }) {
 function OfficerAccess({ onLogin, onBack }) {
   const [error, setError] = useState('')
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const email = String(formData.get('email')).trim().toLowerCase()
     const password = String(formData.get('password'))
-    const result = onLogin({ email, password })
-    setError(result ?? '')
+    setError('')
+    try {
+      const error = await onLogin({ email, password })
+      if (error) setError(error)
+    } catch (loginError) {
+      setError(loginError.message)
+    }
   }
 
   return (
@@ -1054,7 +1388,7 @@ function OfficerAccess({ onLogin, onBack }) {
             </ul>
             <p className="demo-password">Shared demo password: <code>Axiom@2026</code></p>
           </details>
-          <p className="prototype-note">Showcase login only. The shared password and domain checks run in the browser and do not verify identity. Do not use for real accounts.</p>
+          <p className="prototype-note">Showcase login only. The local API checks the shared demo password and domain but does not verify identity. Sessions and workflow data are not production-secure.</p>
         </div>
       </section>
     </main>
@@ -1073,23 +1407,44 @@ function App() {
     return () => window.cancelAnimationFrame(frameId)
   }, [page])
 
-  const loginOfficer = ({ email, password }) => {
-    const emailParts = email.split('@')
-    const role = emailParts.length === 2 ? rolesByDomain[emailParts[1]] : null
+  useEffect(() => {
+    let active = true
+    apiRequest('/api/session')
+      .then(({ user }) => {
+        if (active && user) {
+          setOfficer(user)
+          setPage('officer')
+        }
+      })
+      .catch(() => {})
+    return () => { active = false }
+  }, [])
 
-    if (!role) return 'Use an email address from one of the accepted organization domains.'
-    if (password !== 'Axiom@2026') return 'The password is incorrect.'
+  const loginOfficer = async ({ email, password }) => {
+    try {
+      const result = await apiRequest('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) })
+      setOfficer(result.user)
+      setPage('officer')
+      return ''
+    } catch (error) {
+      return error.message
+    }
+  }
 
-    setOfficer({ email, role })
-    setPage('officer')
-    return ''
+  const signOut = async () => {
+    try {
+      await apiRequest('/api/auth/logout', { method: 'POST' })
+    } finally {
+      setOfficer(null)
+      setPage('public')
+    }
   }
 
   if (page === 'officer' && officer) {
     return (
       <OfficerPlatform
         officer={officer}
-        onSignOut={() => { setOfficer(null); setPage('public') }}
+        onSignOut={signOut}
         onOpenPublicMap={() => { setPage('public'); window.location.hash = 'public-map' }}
       />
     )

@@ -1,0 +1,336 @@
+{
+  "version": 1,
+  "notice": "Metadata-only demonstration file records. No binary uploads are stored.",
+  "files": [
+    {
+      "id": "MOCK-FILE-001",
+      "transactionId": "TX-2048",
+      "documentType": "Sale agreement",
+      "fileName": "MOCK_TX-2048_sale_agreement.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T09:42:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-002",
+      "transactionId": "TX-2048",
+      "documentType": "Transfer / NOC application",
+      "fileName": "MOCK_TX-2048_transfer_application.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T09:42:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-003",
+      "transactionId": "TX-2048",
+      "documentType": "Buyer identity record",
+      "fileName": "MOCK_TX-2048_buyer_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T09:42:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-004",
+      "transactionId": "TX-2048",
+      "documentType": "Seller identity record",
+      "fileName": "MOCK_TX-2048_seller_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-24T09:42:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-005",
+      "transactionId": "TX-2048",
+      "documentType": "Land record copy",
+      "fileName": "MOCK_TX-2048_land_record.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-24T09:42:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-006",
+      "transactionId": "TX-2044",
+      "documentType": "Sale agreement",
+      "fileName": "MOCK_TX-2044_sale_agreement.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-22T11:15:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-007",
+      "transactionId": "TX-2044",
+      "documentType": "Transfer / NOC application",
+      "fileName": "MOCK_TX-2044_transfer_application.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-22T11:15:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-008",
+      "transactionId": "TX-2044",
+      "documentType": "Buyer identity record",
+      "fileName": "MOCK_TX-2044_buyer_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-22T11:15:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-009",
+      "transactionId": "TX-2044",
+      "documentType": "Seller identity record",
+      "fileName": "MOCK_TX-2044_seller_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-22T11:15:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-010",
+      "transactionId": "TX-2044",
+      "documentType": "Land record copy",
+      "fileName": "MOCK_TX-2044_land_record.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-22T11:15:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-011",
+      "transactionId": "TX-2039",
+      "documentType": "Sale agreement",
+      "fileName": "MOCK_TX-2039_sale_agreement.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-20T13:05:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-012",
+      "transactionId": "TX-2039",
+      "documentType": "Transfer / NOC application",
+      "fileName": "MOCK_TX-2039_transfer_application.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-20T13:05:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-013",
+      "transactionId": "TX-2039",
+      "documentType": "Buyer identity record",
+      "fileName": "MOCK_TX-2039_buyer_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-20T13:05:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-014",
+      "transactionId": "TX-2039",
+      "documentType": "Seller identity record",
+      "fileName": "MOCK_TX-2039_seller_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-20T13:05:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-015",
+      "transactionId": "TX-2039",
+      "documentType": "Land record copy",
+      "fileName": "MOCK_TX-2039_land_record.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-20T13:05:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-016",
+      "transactionId": "TX-2037",
+      "documentType": "Sale agreement",
+      "fileName": "MOCK_TX-2037_sale_agreement.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-18T10:00:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-017",
+      "transactionId": "TX-2037",
+      "documentType": "Transfer / NOC application",
+      "fileName": "MOCK_TX-2037_transfer_application.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-18T10:00:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-018",
+      "transactionId": "TX-2037",
+      "documentType": "Buyer identity record",
+      "fileName": "MOCK_TX-2037_buyer_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-18T10:00:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-019",
+      "transactionId": "TX-2037",
+      "documentType": "Seller identity record",
+      "fileName": "MOCK_TX-2037_seller_identity.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-18T10:00:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-020",
+      "transactionId": "TX-2037",
+      "documentType": "Land record copy",
+      "fileName": "MOCK_TX-2037_land_record.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "seller@seller.axiom.demo",
+      "uploadedAt": "2026-11-18T10:00:00.000Z"
+    },
+    {
+      "id": "MOCK-FILE-f589bdcb-5691-464c-8dce-8bcfe7c38314",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Sale agreement",
+      "fileName": "MOCK_TX-2026-22A721_sale_agreement.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T06:37:32.658Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-22dfdba4-5fba-4550-9d43-ba9647228b9c",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Transfer / NOC application",
+      "fileName": "MOCK_TX-2026-22A721_transfer_noc_application.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T06:37:32.855Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-c44dfa0c-8d20-4204-8cd3-32fb7cdd1aab",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Buyer identity record",
+      "fileName": "MOCK_TX-2026-22A721_buyer_identity_record.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T06:37:33.056Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-7ba245bc-2308-4369-a09e-038df3eb41ce",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Seller identity record",
+      "fileName": "MOCK_TX-2026-22A721_seller_identity_record.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T06:39:09.931Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-0d165d42-77a6-48e0-82e7-c0efce3b6f99",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Land record copy",
+      "fileName": "MOCK_TX-2026-22A721_land_record_copy.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "buyer@buyer.axiom.demo",
+      "uploadedAt": "2026-11-24T06:39:10.152Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-56432635-b2bd-4be0-864c-2dde7655a41e",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Registration report",
+      "fileName": "MOCK_TX-2026-22A721_registration_report.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "officer@register-office.assam.gov.in",
+      "uploadedAt": "2026-11-24T06:39:26.462Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-fd5377b8-cdc5-49ab-b402-6ae60c50c6b1",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Mutation application",
+      "fileName": "MOCK_TX-2026-22A721_mutation_application.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "officer@circle-office.assam.gov.in",
+      "uploadedAt": "2026-11-24T06:39:27.601Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-617c7302-47cd-43aa-a490-44864cc51f06",
+      "transactionId": "TX-2026-22A721",
+      "documentType": "Updated land-record extract",
+      "fileName": "MOCK_TX-2026-22A721_updated_land_record_extract.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "officer@circle-office.assam.gov.in",
+      "uploadedAt": "2026-11-24T06:39:27.856Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-70649bca-5c6a-42bb-afbe-33d98bec091c",
+      "transactionId": "TX-2037",
+      "documentType": "Sale agreement",
+      "fileName": "MOCK_TX-2037_sale_agreement.pdf",
+      "mediaType": "application/pdf",
+      "metadataOnly": true,
+      "uploadedBy": "office@circle-office.assam.gov.in",
+      "uploadedAt": "2026-11-24T13:14:38.021Z",
+      "notice": "Mock file reference only; no binary file was uploaded or stored."
+    },
+    {
+      "id": "MOCK-FILE-7745499f-1e6f-4b4e-af57-e2713b47e1c5",
+      "transactionId": "TX-2048",
+      "documentType": "Field verification report",
+      "fileName": "MOCK_TX-2048_field_verification_report.pdf",
+      "mediaType": "application/pdf",
+      "fileSize": 58,
+      "lastModified": 1795527026538,
+      "metadataOnly": true,
+      "uploadedBy": "surveyor@field-survey.axiom.demo",
+      "uploadedByRole": "Field Survey Officer",
+      "uploadedAt": "2026-11-24T13:34:55.752Z",
+      "notice": "Mock document reference removed by its authorized uploader; no file bytes were stored.",
+      "removedAt": "2026-11-24T13:37:39.843Z",
+      "removedBy": "surveyor@field-survey.axiom.demo",
+      "removedByRole": "Field Survey Officer"
+    },
+    {
+      "id": "MOCK-FILE-65adf660-ac45-4c2c-9597-43d377b73ad0",
+      "transactionId": "TX-2048",
+      "documentType": "Field verification report",
+      "fileName": "MOCK_TX-2048_field_verification_report.pdf",
+      "mediaType": "application/pdf",
+      "fileSize": 58,
+      "lastModified": null,
+      "metadataOnly": true,
+      "uploadedBy": "surveyor@field-survey.axiom.demo",
+      "uploadedByRole": "Field Survey Officer",
+      "uploadedAt": "2026-11-24T13:37:39.886Z",
+      "notice": "Mock upload only; the selected file bytes were not uploaded or stored."
+    }
+  ]
+}
